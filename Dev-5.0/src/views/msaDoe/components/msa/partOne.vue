@@ -1,0 +1,227 @@
+
+<template>
+   <ve-line
+    ref="line"
+    :data="datas"
+    :legend-visible="false"
+    :height='height'
+    :width="width"
+    :grid="grid"
+    :mark-line="markLine"
+    :extend="extend"
+
+    >
+  </ve-line>
+</template>
+
+<script>
+export default {
+  props: ["chartData",'xPart',"H9","W9"],
+  data() {
+    let self = this;
+    this.dataZoom = [
+      {
+        type: "slider",
+        start: 0,
+        end: 100
+      }
+    ];
+    this.markLine = {
+       precision:4,
+      data: [
+        /*
+        {
+          name: "xPart",
+          //yAxis: this.xPart,
+          yAxis:0.207,
+          lineStyle:{
+            normal:{
+              // type:'solid'
+            }
+          },
+          itemStyle: {
+            normal: {
+              lineStyle: {
+                color: "#f00"
+              }
+            }
+          },
+          label: {
+            normal: {
+              show: true,
+              position: "end",
+              formatter: "xPart=" + (Number(this.xPart)).toString().slice(0, this.getFixed(Number(this.xPart)) + 5)
+            
+            }
+          }
+        }
+      */
+       {
+          name: "xPart",
+          yAxis: this.xPart,
+          lineStyle:{
+            normal:{
+              // type:'solid'
+              color: "#f00"
+            }
+          },
+          itemStyle: {
+            normal: {
+              lineStyle: {
+                color: "#f00"
+              }
+            }
+          },
+          label: {
+            normal: {
+              show: true,
+              position: "end",
+              formatter: "xPart="+ this.xPart
+            }
+          }
+        },
+      ]
+    };
+    this.extend = {
+      series: {
+        type: "line",
+        smooth: false,
+        showAllSymbol: true,
+        symbolSize: [6, 6],
+        lineStyle: {
+          normal: {
+            color: "rgb(25,212,174)"
+            //width
+          }
+        },
+        itemStyle: {
+          normal: {
+            borderWidth: 2,
+
+            color: function(params) {
+              let improper = self.chartData.rows[params.dataIndex].improper;
+
+              if (improper) {
+                if (improper.length > 0) {
+                  return "#f00";
+                } else {
+                  return "rgb(25,212,174)";
+                }
+              } else {
+                return "rgb(25,212,174)";
+              }
+            }
+          }
+        }
+      },
+      tooltip: {
+        formatter: function(params) {
+          //console.log(params)
+          let index = params[0].dataIndex,
+            name = params[0].name,
+            marker = params[0].marker,
+            value = params[0].value;
+          let improper = self.chartData.rows[index].improper;
+          if (improper && improper.length > 0) {
+            return (
+              name +
+              "<br/>" +
+              marker +
+              name +
+              " : " +
+              value +
+              "<br/>" +
+              marker +
+              "error : " +
+              improper.join(";<br/>")
+            );
+          } else {
+            return name + "<br/>" + marker + name + " : " + value;
+          }
+        }
+      },
+      xAxis: {
+        axisLabel: {
+          //rotate:'90',
+          interval: "auto"
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: "rgb(102,102,102)"
+          }
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: "rgb(102,102,102)"
+          }
+        }
+      },
+      yAxis: {
+        max:function(value){
+          let Max=Math.max(self.xPart,value.max);
+         
+           let range=Max-value.min;
+           let max= Max + range/8;
+          // return  max.toString().slice(0,self.getFixed(max)+3);
+          console.log(max.toString().slice(0,self.getFixed(max)+3));
+          return max.toString().slice(0,self.getFixed(max)+5);
+           
+        },
+        min:function(value){
+           let range=value.max-value.min;
+           let min= value.min - range/8;
+          return  min.toString().slice(0,self.getFixed(min)+3);
+           
+        },
+        position:'left',
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: "rgb(102,102,102)"
+          }
+        }
+      }
+    };
+
+    return {
+      
+      grid: {
+        top:5,
+        right: 80,
+        bottom:40
+      }
+    };
+  },
+  methods: {
+    getFixed: function(number) {
+      if (typeof number == "string") {
+        return number.search(/[1-9]/);
+      } else {
+        return number.toString().search(/[1-9]/);
+      }
+
+      //    this.getFixed(0.000123);===5
+    }
+  },
+  computed: {
+    datas: function() {
+      // let per = 100 / Math.ceil(this.chartData.rows.length / 50);
+      // this.dataZoom[0].end = per;
+      // console.log(this.chartData);
+
+      return this.chartData;
+    },
+    height:function(){
+      return this.H9-50+'px';
+    },
+    width:function(){
+      return this.W9;
+    }
+  },
+  mounted:function(){
+      this.$refs['line'].echarts.resize();
+  }
+};
+</script>
