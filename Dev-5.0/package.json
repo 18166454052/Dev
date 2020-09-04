@@ -43,7 +43,7 @@
     "pdfmake": "^0.1.38",
     "screenfull": "3.3.2",
     "serve-favicon": "^2.4.5",
-    "showdown": "1.8.5",
+    "showdown": "1.9.1",
     "simplemde": "1.11.2",
     "sortablejs": "1.7.0",
     "stomp-client": "^0.9.0",
